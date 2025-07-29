@@ -1,4 +1,4 @@
-﻿using PcapAnalyzer.Detectors;
+﻿using PcapAnalyzer.Analyzers;
 
 class Program
 {
@@ -35,74 +35,7 @@ class Program
 
     private static void FinalReport(string pcapFile)
     {
-        /*Console.WriteLine("\n=== Analyse des scans Nmap ===");
-        var nmapDetector = new NmapScanDetector();
-        nmapDetector.AnalyzePcapFile(pcapFile);
-
-        Console.WriteLine("\n========================================================================\n========================================================================");
-
-        Console.WriteLine("\n=== Analyse des scripts injectés ===");
-        var scriptDetector = new ScriptInjectionDetector();
+        var scriptDetector = new Analyzer();
         scriptDetector.AnalyzePcapFile(pcapFile);
-
-        Console.WriteLine("\n========================================================================\n========================================================================");
-
-        Console.WriteLine("\n=== Analyse des tentatives de force brute ===");
-        var bruteForceDetector = new BruteForceDetector();
-        bruteForceDetector.AnalyzePcapFile(pcapFile);
-
-        Console.WriteLine("\n========================================================================\n========================================================================");
-
-        Console.WriteLine("\n=== Analyse des tentatives de enum directory ===");
-        var enumDirectoryDetector = new DirectoryEnumDetector();
-        enumDirectoryDetector.AnalyzePcapFile(pcapFile);
-
-        Console.WriteLine("\n========================================================================\n========================================================================");
-
-        Console.WriteLine("\n=== Analyse des tentatives de manipulation SQL ===");
-        var sqlManipDetector = new SqlManipulationDetector();
-        sqlManipDetector.AnalyzePcapFile(pcapFile);
-
-        Console.WriteLine("\n========================================================================\n========================================================================");
-
-        Console.WriteLine("\n=== Analyse des tentatives de file inclusion' ===");
-        var fileInclusionDetector = new FileInclusionDetector();
-        fileInclusionDetector.AnalyzePcapFile(pcapFile);
-
-        Console.WriteLine("\n========================================================================\n========================================================================");
-
-        Console.WriteLine("\n=== Analyse des tentatives de path traversal' ===");
-        var pathTraversalDetector = new PathTraversalDetector();
-        pathTraversalDetector.AnalyzePcapFile(pcapFile);
-
-        Console.WriteLine("\n========================================================================\n========================================================================");
-
-        Console.WriteLine("\n=== Analyse des tentatives d'injection SSRF' ===");
-        var ssrfDetector = new SsrfDetector();
-        ssrfDetector.AnalyzePcapFile(pcapFile);
-
-        Console.WriteLine("\n========================================================================\n========================================================================");
-
-        Console.WriteLine("\n=== Analyse des tentatives d'injection XXE' ===");
-        var xxeDetector = new XxeDetector();
-        xxeDetector.AnalyzePcapFile(pcapFile);
-
-        Console.WriteLine("\n========================================================================\n========================================================================");
-
-        Console.WriteLine("\n=== Analyse des tentatives d'attaque JWT' ===");
-        var jwtDetector = new JwtAttackDetector();
-        jwtDetector.AnalyzePcapFile(pcapFile);*/
-
-        Console.WriteLine("\n========================================================================\n========================================================================");
-
-        Console.WriteLine("\n=== Analyse des tentatives d'exfiltration des données' ===");
-        var leakDetector = new DataLeakDetector();
-        leakDetector.AnalyzePcapFile(pcapFile);
-
-        Console.WriteLine("\n========================================================================\n========================================================================");
-        /*Console.WriteLine("\n=== Analyse des tentatives d'injection de commande' ===");
-        var smdInjectionDetector = new CommandInjectionDetector();
-        smdInjectionDetector.AnalyzePcapFile(pcapFile);*/
-
     }
 }
