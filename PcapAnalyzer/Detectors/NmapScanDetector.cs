@@ -1,80 +1,15 @@
-﻿using PacketDotNet;
-using SharpPcap.LibPcap;
-using SharpPcap;
+﻿using PcapAnalyzer.Models;
 
 namespace PcapAnalyzer.Detectors;
 
 public class NmapScanDetector
 {
-    public void AnalyzePcapFile(string pcapFile)
+    public void DisplayResults(int packetCount, Dictionary<string, NmapModel> scanTracker)
     {
-        try
-        {
-            var scanTracker = new Dictionary<string, Models.NmapModel>();
-            int packetCount = 0;
+        Console.WriteLine("\n========================================================================\n========================================================================");
 
-            using (var captureFileReader = new CaptureFileReaderDevice(pcapFile))
-            {
-                captureFileReader.Open();
-
-                Console.WriteLine($"Analyse du fichier : {pcapFile}");
-
-                captureFileReader.OnPacketArrival += new PacketArrivalEventHandler((sender, e) =>
-                {
-                    packetCount++;
-
-                    var rawCapture = e.GetPacket();
-
-                    var packet = Packet.ParsePacket(rawCapture.LinkLayerType, rawCapture.Data);
-                    var tcpPacket = packet.Extract<TcpPacket>();
-
-                    if (tcpPacket != null)
-                    {
-                        var ipPacket = packet.Extract<IPPacket>();
-                        if (ipPacket != null)
-                        {
-                            string srcIP = ipPacket.SourceAddress.ToString();
-                            int dstPort = tcpPacket.DestinationPort;
-
-                            const ushort SYN_FLAG = 0x02; // SYN flag (bit 2)
-                            const ushort ACK_FLAG = 0x10; // ACK flag (bit 5)
-                            if ((tcpPacket.Flags & SYN_FLAG) == SYN_FLAG && (tcpPacket.Flags & ACK_FLAG) == 0)
-                            {
-                                if (!scanTracker.ContainsKey(srcIP))
-                                {
-                                    scanTracker[srcIP] = new Models.NmapModel
-                                    {
-                                        SourceIP = srcIP,
-                                        PortCount = 0,
-                                        FirstPacketTime = rawCapture.Timeval.Date,
-                                        LastPacketTime = rawCapture.Timeval.Date
-                                    };
-                                }
-
-                                scanTracker[srcIP].PortCount++;
-                                scanTracker[srcIP].LastPacketTime = rawCapture.Timeval.Date;
-                            }
-                        }
-                    }
-                });
-
-                captureFileReader.Capture();
-
-                captureFileReader.Close();
-            }
-
-            DetectNmapScans(scanTracker, packetCount);
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Erreur lors de l'analyse : {ex.Message}");
-        }
-    }
-
-    private void DetectNmapScans(Dictionary<string, Models.NmapModel> scanTracker, int totalPackets)
-    {
-        Console.WriteLine($"\nAnalyse terminée. Paquets analysés : {totalPackets}");
-        Console.WriteLine("Résultats de détection de scans Nmap :\n");
+        Console.WriteLine("\n=== Résultats de détection de scans Nmap' ===");
+        Console.WriteLine($"\nAnalyse terminée. Paquets analysés : {packetCount}");
 
         bool scanDetected = false;
 

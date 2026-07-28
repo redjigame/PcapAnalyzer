@@ -1,93 +1,26 @@
 ﻿using PcapAnalyzer.Models;
-using SharpPcap.LibPcap;
-using PacketDotNet;
-using SharpPcap;
-using System.Text.RegularExpressions;
 
 namespace PcapAnalyzer.Detectors;
 
 public class PathTraversalDetector
 {
-    public AnalysisResultModel AnalyzePcapFile(string pcapFile)
+    public List<ScriptInjectionModel> DetectPathTraversalAttacks(int packetCount, List<ScriptInjectionModel> pathTraversalTracker)
     {
-        var detectedTraversals = new List<ScriptInjectionModel>();
-        int packetCount = 0;
+        var detectedAttempts = new List<ScriptInjectionModel>();
 
-        using var reader = new CaptureFileReaderDevice(pcapFile);
-        reader.Open();
-
-        reader.OnPacketArrival += (sender, e) =>
+        foreach (var attempt in pathTraversalTracker)
         {
-            packetCount++;
-
-            var raw = e.GetPacket();
-            var packet = Packet.ParsePacket(raw.LinkLayerType, raw.Data);
-            var tcp = packet.Extract<TcpPacket>();
-            var ip = packet.Extract<IPPacket>();
-
-            if (tcp?.PayloadData != null && ip != null && tcp.PayloadData.Length > 0)
-            {
-                string payload = System.Text.Encoding.UTF8.GetString(tcp.PayloadData);
-
-                if (IsPathTraversalAttempt(payload, out string matchedPattern))
-                {
-                    detectedTraversals.Add(new ScriptInjectionModel
-                    {
-                        SourceIP = ip.SourceAddress.ToString(),
-                        DestinationIP = ip.DestinationAddress.ToString(),
-                        DestinationPort = tcp.DestinationPort,
-                        ScriptContent = payload.Length > 150 ? payload[..150] + "..." : payload,
-                        PacketNumber = packetCount,
-                        PacketTime = raw.Timeval.Date,
-                        ScriptType = $"Path Traversal ({matchedPattern})"
-                    });
-                }
-            }
-        };
-
-        reader.Capture();
-        reader.Close();
-
-        var result = new AnalysisResultModel
-        {
-            TotalPackets = packetCount,
-            DetectedScripts = detectedTraversals
-        };
-
-        DisplayResults(result);
-        return result;
-    }
-
-    private bool IsPathTraversalAttempt(string payload, out string matchedPattern)
-    {
-        matchedPattern = null;
-        if (string.IsNullOrWhiteSpace(payload)) return false;
-
-        string decoded = Uri.UnescapeDataString(payload.ToLowerInvariant());
-
-        string[] patterns =
-        {
-                @"\.\./", @"\.\.\\", // Unix et Windows traversal
-                @"/etc/passwd", @"c:\\windows\\win.ini",
-                @"\b(file|path|filename|filepath)=.*?\.\./", // paramètre typique
-                @"\.\./[a-z0-9_\-]+/\.\./", // double traversal
-                @"/\.git/", @"/\.svn/", @"/\.env", // fichiers cachés fréquents
-            };
-
-        foreach (var pattern in patterns)
-        {
-            if (Regex.IsMatch(decoded, pattern, RegexOptions.IgnoreCase))
-            {
-                matchedPattern = pattern;
-                return true;
-            }
+            detectedAttempts.Add(attempt);
         }
 
-        return false;
+        return detectedAttempts;
     }
 
-    private void DisplayResults(AnalysisResultModel result)
+    public void DisplayResults(AnalysisResultModel result)
     {
+        Console.WriteLine("\n========================================================================\n========================================================================");
+
+        Console.WriteLine("\n=== Analyse des tentatives de path traversal' ===");
         Console.WriteLine($"\nAnalyse terminée. Paquets analysés : {result.TotalPackets}");
         Console.WriteLine("Résultats de détection de path traversal :\n");
 

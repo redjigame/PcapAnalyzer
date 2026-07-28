@@ -1,62 +1,22 @@
 ﻿using PcapAnalyzer.Models;
-using SharpPcap.LibPcap;
-using System.Text;
 using System.Text.RegularExpressions;
-using PacketDotNet;
-using SharpPcap;
 
 namespace PcapAnalyzer.Detectors;
 
 public class CommandInjectionDetector
 {
-    public AnalysisResultModel AnalyzePcapFile(string pcapFile)
+    public List<ScriptInjectionModel> DetectCmdInjecAttempts(string payload, Dictionary<(string SrcIP, string DstIP, int DstPort), ScriptInjectionModel> attemptTracker)
     {
-        var detectedInjections = new List<ScriptInjectionModel>();
-        int packetCount = 0;
+        var detectedAttempts = new List<ScriptInjectionModel>();
 
-        using var reader = new CaptureFileReaderDevice(pcapFile);
-        reader.Open();
-
-        reader.OnPacketArrival += (sender, e) =>
+        if (IsCommandInjectionPayload(payload, out string pattern))
         {
-            packetCount++;
-
-            var raw = e.GetPacket();
-            var packet = Packet.ParsePacket(raw.LinkLayerType, raw.Data);
-            var tcp = packet.Extract<TcpPacket>();
-            var ip = packet.Extract<IPPacket>();
-
-            if (tcp?.PayloadData != null && ip != null && tcp.PayloadData.Length > 0)
+            foreach (var attempt in attemptTracker.Values)
             {
-                string payload = Encoding.UTF8.GetString(tcp.PayloadData);
-
-                if (IsCommandInjectionPayload(payload, out string pattern))
-                {
-                    detectedInjections.Add(new ScriptInjectionModel
-                    {
-                        SourceIP = ip.SourceAddress.ToString(),
-                        DestinationIP = ip.DestinationAddress.ToString(),
-                        DestinationPort = tcp.DestinationPort,
-                        ScriptContent = payload.Length > 150 ? payload[..150] + "..." : payload,
-                        PacketNumber = packetCount,
-                        PacketTime = raw.Timeval.Date,
-                        ScriptType = $"Command Injection ({pattern})"
-                    });
-                }
+                detectedAttempts.Add(attempt);
             }
-        };
-
-        reader.Capture();
-        reader.Close();
-
-        var result = new AnalysisResultModel
-        {
-            TotalPackets = packetCount,
-            DetectedScripts = detectedInjections
-        };
-
-        DisplayResults(result);
-        return result;
+        }
+        return detectedAttempts;
     }
 
     private bool IsCommandInjectionPayload(string payload, out string matchedPattern)
@@ -86,8 +46,11 @@ public class CommandInjectionDetector
         return false;
     }
 
-    private void DisplayResults(AnalysisResultModel result)
+    public void DisplayResults(AnalysisResultModel result)
     {
+        Console.WriteLine("\n========================================================================\n========================================================================");
+
+        Console.WriteLine("\n=== Analyse des scripts injectés ===");
         Console.WriteLine($"\nAnalyse terminée. Paquets analysés : {result.TotalPackets}");
         Console.WriteLine("Résultats de détection d'injection de commande :\n");
 
