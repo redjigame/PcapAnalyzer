@@ -73,8 +73,11 @@ public class Analyzer
 
             var raw = e.GetPacket();
             var packet = Packet.ParsePacket(raw.LinkLayerType, raw.Data);
-            var tcp = packet.Extract<TcpPacket>();
+
             var ip = packet.Extract<IPPacket>();
+            if (ip == null) return;
+
+            var tcp = ip.Extract<TcpPacket>();
 
             if (tcp != null)
             {
