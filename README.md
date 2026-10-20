@@ -1,5 +1,5 @@
 <h1>🛡️ PcapAnalyzer<h1>
-    <br*>
+    <br/>
 O PcapAnalyzer é uma aplicação de console desenvolvida em C# (.NET 9.0) projetada para analisar arquivos de captura de rede (formatos .pcap e .pcapng) e detectar automaticamente uma variedade de ataques cibernéticos, vetores de exploração e atividades suspeitas no tráfego de rede.
 🚀 Funcionalidades
 O projeto é capaz de identificar os seguintes tipos de ameaças e anomalias:
