@@ -1,50 +1,53 @@
-<h1>🛡️ PcapAnalyzer<h1>
-    <br/>
-O PcapAnalyzer é uma aplicação de console desenvolvida em C# (.NET 9.0) projetada para analisar arquivos de captura de rede (formatos .pcap e .pcapng) e detectar automaticamente uma variedade de ataques cibernéticos, vetores de exploração e atividades suspeitas no tráfego de rede.
-🚀 Funcionalidades
-O projeto é capaz de identificar os seguintes tipos de ameaças e anomalias:
-    🔑 Ataques de Força Bruta (Brute Force)
-    💻 Injeção de Comandos (Command Injection)
-    📤 Vazamento de Dados (Data Leaks)
-    📁 Enumeração de Diretórios (Directory Enumeration)
-    📂 Inclusão de Arquivos (File Inclusion - LFI/RFI)
-    🎫 Ataques a Tokens JWT (JWT Attacks)
-    🗺️ Varreduras de Rede (Nmap Scans)
-    🗂️ Path Traversal
-    📜 Injeção de Scripts (Script Injection / XSS)
-    🗄️ Manipulação de SQL (SQL Injection)
-    🌐 Falsificação de Solicitação do Lado do Servidor (SSRF)
-    📄 Entidade Externa XML (XXE)
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PcapAnalyzer - Documentation</title>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --text-color: #1f2937;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --code-bg: #f1f5f9;
+            --border-color: #e2e8f0;
+            --warning-bg: #fff7ed;
+            --warning-border: #f97316;
+            --warning-text: #9a3412;
+        }
 
-📋 Pré-requisitos:
-    .NET 9.0 SDK
-     ou superior instalado.
-    Um arquivo de captura de rede (.pcap ou .pcapng) para análise (ex: gerado pelo Wireshark, tcpdump ou ferramentas similares)
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-⚙️ Instalação e Uso
-  1-Clone o repositório:
-      git clone https://github.com/redjigame/PcapAnalyzer.git
-      cd PcapAnalyzer/PcapAnalyzer
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            padding: 2rem 1rem;
+        }
 
-  2-Restaure as dependências do projeto:
-      dotnet restore
-      
-  3-Compile o projeto:
-      dotnet build
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: var(--card-bg);
+            padding: 2.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
 
-  4-Execute a aplicação:
-      dotnet run 
+        header {
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 1.5rem;
+            margin-bottom: 2rem;
+        }
 
-  O aplicativo solicitará o caminho do arquivo de captura (Nota: O prompt atual está em francês no código original). Digite o caminho completo ou relativo e pressione Enter.
-
-Visualize o relatório:
-  A ferramenta processará os pacotes e exibirá um relatório consolidado no console com as ameaças detectadas, endereços IP de origem/destino, portas e contagem de pacotes.
-
-📦 Dependências Principais
-O projeto utiliza bibliotecas robustas e consagradas para a manipulação e análise de pacotes de rede que vocês deverão instalar:
-
-  SharpPcap
-     (v6.3.1): Para leitura e processamento de arquivos de captura de rede.
-  PacketDotNet
-     (v1.4.8): Para análise e dissecação profunda dos pacotes de rede.
-    
+        h1 {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+            display
